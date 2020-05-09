@@ -9,3 +9,5 @@ Set FLASK_SECRET as your secret.
 Set TEMPLATES_BUCKET as your s3 bucket.
 
 Set AWS_ID and AWS_SECRET as your aws credentials.
+
+Set PORT_NUM as your port number to run the flask app on.

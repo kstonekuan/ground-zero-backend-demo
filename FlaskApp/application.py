@@ -200,4 +200,4 @@ if __name__ == "__main__":
     # https://docs.aws.amazon.com/cloud9/latest/user-guide/app-preview.html
     use_c9_debugger = False
     application.run(use_debugger=not use_c9_debugger, debug=True,
-                    use_reloader=not use_c9_debugger, host='0.0.0.0', port=80)
+                    use_reloader=not use_c9_debugger, host='0.0.0.0', port=int(config.PORT_NUM))
