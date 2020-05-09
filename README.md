@@ -7,3 +7,5 @@ This is the backend demo using AWS S3 and Comprehend to take in templates and do
 Set FLASK_SECRET as your secret.
 
 Set TEMPLATES_BUCKET as your s3 bucket.
+
+Set AWS_ID and AWS_SECRET as your aws credentials.

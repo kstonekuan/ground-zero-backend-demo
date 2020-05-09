@@ -83,12 +83,12 @@ def home():
     #####
     # s3 getting a list of templates in the bucket
     #####
-    s3_client = boto3.client('s3')
+    s3_client = boto3.client('s3', aws_access_key_id=config.AWS_ID, aws_secret_access_key=config.AWS_SECRET, region_name='us-west-2')
     
     templates = getTemplates(s3_client)
             
 
-    comprehend = boto3.client('comprehend')
+    comprehend = boto3.client('comprehend', aws_access_key_id=config.AWS_ID, aws_secret_access_key=config.AWS_SECRET, region_name='us-west-2')
     form = UploadForm()
     document = None
     if form.validate_on_submit():
@@ -200,4 +200,4 @@ if __name__ == "__main__":
     # https://docs.aws.amazon.com/cloud9/latest/user-guide/app-preview.html
     use_c9_debugger = False
     application.run(use_debugger=not use_c9_debugger, debug=True,
-                    use_reloader=not use_c9_debugger, host='0.0.0.0', port=8080)
+                    use_reloader=not use_c9_debugger, host='0.0.0.0', port=80)

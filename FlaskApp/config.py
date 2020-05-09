@@ -13,3 +13,5 @@ import os
 
 TEMPLATES_BUCKET = os.environ['TEMPLATES_BUCKET']
 FLASK_SECRET = os.environ['FLASK_SECRET']
+AWS_ID = os.environ['AWS_ID']
+AWS_SECRET = os.environ['AWS_SECRET']
