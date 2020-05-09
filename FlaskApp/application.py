@@ -34,58 +34,58 @@ class UploadForm(FlaskForm):
 
 def getTemplates(s3_client):
     response = s3_client.list_objects(
-        Bucket=config.PHOTOS_BUCKET,
+        Bucket=config.TEMPLATES_BUCKET,
         Prefix="paragraphs/"
     )
 
     labels_response = s3_client.list_objects(
-        Bucket=config.PHOTOS_BUCKET,
+        Bucket=config.TEMPLATES_BUCKET,
         Prefix="labels/"
     )
     
     senti_response = s3_client.list_objects(
-        Bucket=config.PHOTOS_BUCKET,
+        Bucket=config.TEMPLATES_BUCKET,
         Prefix="sentiment/"
     )
-    photos = []
+    templates = []
     i = 0
     if 'Contents' in response and response['Contents']:
         for obj in response['Contents']:
-            photos.append({})
-            txt = s3_client.get_object(Bucket=config.PHOTOS_BUCKET, Key=obj['Key'])
+            templates.append({})
+            txt = s3_client.get_object(Bucket=config.TEMPLATES_BUCKET, Key=obj['Key'])
             body = txt['Body'].read().decode("utf-8")
-            photos[i] = {"text": body}
+            templates[i] = {"text": body}
             i += 1
         i = 0
         for obj in labels_response['Contents']:
-            result = s3_client.get_object(Bucket=config.PHOTOS_BUCKET, Key=obj['Key'])
+            result = s3_client.get_object(Bucket=config.TEMPLATES_BUCKET, Key=obj['Key'])
             body = json.loads(result['Body'].read().decode("utf-8"))
-            photos[i]["labels"] = []
+            templates[i]["labels"] = []
             if body["KeyPhrases"]:
                 for phrase in body["KeyPhrases"]:
                     if phrase["Score"] >= 0.99999 : 
-                        photos[i]["labels"].append(phrase["Text"])
+                        templates[i]["labels"].append(phrase["Text"])
             i += 1
         
         i = 0
         for obj in senti_response['Contents']:
-            result = s3_client.get_object(Bucket=config.PHOTOS_BUCKET, Key=obj['Key'])
+            result = s3_client.get_object(Bucket=config.TEMPLATES_BUCKET, Key=obj['Key'])
             body = json.loads(result['Body'].read().decode("utf-8"))
-            photos[i]["sentiments"] = body["SentimentScore"]
+            templates[i]["sentiments"] = body["SentimentScore"]
             i += 1
             
-    return photos
+    return templates
 
 @application.route("/", methods=('GET', 'POST'))
 def home():
     """Homepage route"""
 
     #####
-    # s3 getting a list of photos in the bucket
+    # s3 getting a list of templates in the bucket
     #####
     s3_client = boto3.client('s3')
     
-    photos = getTemplates(s3_client)
+    templates = getTemplates(s3_client)
             
 
     comprehend = boto3.client('comprehend')
@@ -102,7 +102,7 @@ def home():
                 
                 if len(para.text) > 15:
                     s3_client.put_object(
-                        Bucket=config.PHOTOS_BUCKET,
+                        Bucket=config.TEMPLATES_BUCKET,
                         Key="paragraphs/" + name + '.txt',
                         Body=para.text,
                         ContentType='text/plain'#'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
@@ -113,7 +113,7 @@ def home():
                     result = json.dumps(comprehend.detect_key_phrases(Text=text, LanguageCode='en'), sort_keys=True, indent=4)
                     
                     s3_client.put_object(
-                        Bucket=config.PHOTOS_BUCKET,
+                        Bucket=config.TEMPLATES_BUCKET,
                         Key="labels/" + name + ".json",
                         Body=result,
                         ContentType='application/json'
@@ -122,12 +122,12 @@ def home():
                     sentiment = json.dumps(comprehend.detect_sentiment(Text=text, LanguageCode='en'), sort_keys=True, indent=4)
                     
                     s3_client.put_object(
-                        Bucket=config.PHOTOS_BUCKET,
+                        Bucket=config.TEMPLATES_BUCKET,
                         Key="sentiment/" + name + ".sentiment.json",
                         Body=sentiment,
                         ContentType='application/json'
                     )
-            photos = getTemplates(s3_client)
+            templates = getTemplates(s3_client)
 
     return render_template_string("""
             {% extends "main.html" %}
@@ -135,8 +135,7 @@ def home():
             <h4>Upload Document</h4>
             <form method="POST" enctype="multipart/form-data" action="{{ url_for('home') }}">
                 {{ form.csrf_token }}
-                  <div class="control-group">
-                   <label class="control-label">Photo</label>
+                  <div class="control-group"
                     {{ form.file() }}
                   </div>
 
@@ -153,25 +152,25 @@ def home():
             <h3>Uploaded!</h3>
             {% endif %}
             
-            {% if photos %}
+            {% if templates %}
             <hr/>
             <h4>Templates</h4><hr/>
-            {% for photo in photos %}
-                <span class="label label-default">Neutral: {{"%.2f" % photo['sentiments']['Neutral']}}</span>
-                <span class="label label-success">Positive: {{"%.2f" % photo['sentiments']['Positive']}}</span>
-                <span class="label label-warning">Mixed: {{"%.2f" % photo['sentiments']['Mixed']}}</span>
-                <span class="label label-danger">Negative: {{"%.2f" % photo['sentiments']['Negative']}}</span>
+            {% for template in templates %}
+                <span class="label label-default">Neutral: {{"%.2f" % template['sentiments']['Neutral']}}</span>
+                <span class="label label-success">Positive: {{"%.2f" % template['sentiments']['Positive']}}</span>
+                <span class="label label-warning">Mixed: {{"%.2f" % template['sentiments']['Mixed']}}</span>
+                <span class="label label-danger">Negative: {{"%.2f" % template['sentiments']['Negative']}}</span>
                 <br/>
-                {% for label in photo['labels'] %}
+                {% for label in template['labels'] %}
                     <span class="label label-info">{{label}}</span>
                 {% endfor %}
                 <br/>
-                <span>{{photo['text']}}</span><br/><hr/>
+                <span>{{template['text']}}</span><br/><hr/>
             {% endfor %}
             {% endif %}
 
             {% endblock %}
-                """, form=form, document=document, photos=photos)
+                """, form=form, document=document, templates=templates)
 
 
 @application.route("/info")

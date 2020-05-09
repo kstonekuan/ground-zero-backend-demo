@@ -11,5 +11,5 @@
 "Central configuration"
 import os
 
-PHOTOS_BUCKET = os.environ['PHOTOS_BUCKET']
+TEMPLATES_BUCKET = os.environ['TEMPLATES_BUCKET']
 FLASK_SECRET = os.environ['FLASK_SECRET']
