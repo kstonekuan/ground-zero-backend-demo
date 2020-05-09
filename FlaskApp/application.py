@@ -136,6 +136,7 @@ def home():
             <form method="POST" enctype="multipart/form-data" action="{{ url_for('home') }}">
                 {{ form.csrf_token }}
                   <div class="control-group"
+                    <label class="control-label">Document</label>
                     {{ form.file() }}
                   </div>
 
