@@ -1,6 +1,6 @@
 # Ground Zero Demo OrthoDocs
 
-This is the backend demo using AWS S3 and Comprehend to take in templates and do some rough analysis such as key phrase extraction and sentiment analysis.
+OrthoDocs is a smart and mobile document creation software and service for working professionals. This is the backend demo using AWS S3 and Comprehend to take in templates and do some rough analysis such as key phrase extraction and sentiment analysis.
 
 # Environment Variables
 
@@ -15,3 +15,7 @@ Set PORT_NUM as your port number to run the flask app on.
 # Demo Link
 
 Temporary webserver set up on EC2: <http://ec2-34-221-232-110.us-west-2.compute.amazonaws.com/>
+
+# References
+
+This code was adapted from the AWS Developer Series on edX: <https://courses.edx.org/courses/course-v1:AWS+OTP-AWSD1+2T2019/course/>
