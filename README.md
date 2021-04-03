@@ -14,7 +14,7 @@ Set PORT_NUM as your port number to run the flask app on.
 
 # Demo Link
 
-Temporary webserver set up on EC2: <http://ec2-34-221-232-110.us-west-2.compute.amazonaws.com/>
+Temporary webserver set up on EC2: [CLOSED]
 
 # References
 
